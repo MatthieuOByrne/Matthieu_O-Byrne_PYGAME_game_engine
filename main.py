@@ -47,7 +47,7 @@ class Game:
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.player1 = Player(self, 1, 1)
+        self.coin = pg.sprite.Group()
         for row, tiles in enumerate(self.map_data):
             print(row)
             for col, tile in enumerate(tiles):
@@ -55,6 +55,10 @@ class Game:
                 if tile == '1':
                     print("a wall at", row, col)
                     Wall(self, col, row)
+                if tile == 'c':
+                    Coin(self, col, row)
+                if tile == 'p':
+                    Player(self, col, row)
 
     # make the player update every frame
     def run(self):

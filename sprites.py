@@ -2,6 +2,7 @@
 # The code was inspired by Zelda and informed by Chris Bradfield
 import pygame as pg
 from setting import *
+moneyBag = 0
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -55,6 +56,14 @@ class Player(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+    def collide_with_coin(self, kill):  
+        hits = pg.sprite.spritecollide(self, self.game.coin, kill)
+        if hits:
+            return True
+    def collide_with_group(self, group, kill):  
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            return True
         
     # update the player
 
@@ -67,6 +76,9 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
+        if self.collide_with_group(self.game.coin, True):
+            moneyBag += 1
+
         # add colision later
 
 
@@ -79,6 +91,21 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(BROWN)
+        self.game = game
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+
+class Coin(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.coin
+    
+        # draw it
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(YELLOW)
         self.game = game
         self.rect = self.image.get_rect()
         self.x = x

@@ -9,6 +9,7 @@ TILESIZE = 32
 BGCOLOR = (0, 0, 0)
 GREEN = (0, 255, 0)
 BROWN = (165, 42, 42)
+YELLOW = (255, 250, 204)
 
 FPS = 30
 
