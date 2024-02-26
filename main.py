@@ -59,6 +59,9 @@ class Game:
                     Coin(self, col, row)
                 if tile == 'p':
                     Player(self, col, row)
+                if tile == 'U':
+                    Powerup_Speed(self, col, row)
+
 
     # make the player update every frame
     def run(self):
