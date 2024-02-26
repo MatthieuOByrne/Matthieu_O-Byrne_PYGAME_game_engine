@@ -2,7 +2,6 @@
 # The code was inspired by Zelda and informed by Chris Bradfield
 import pygame as pg
 from setting import *
-moneyBag = 0
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -18,6 +17,7 @@ class Player(pg.sprite.Sprite):
         # set position
         self.x = x * TILESIZE
         self.y = y * TILESIZE
+        self.moneyBag = 0
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -56,18 +56,17 @@ class Player(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
-    def collide_with_coin(self, kill):  
-        hits = pg.sprite.spritecollide(self, self.game.coin, kill)
-        if hits:
-            return True
-    def collide_with_group(self, group, kill):  
+    # thank you Aayush
+    def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            return True
+            if str(hits[0].__class__.__name__) == "Coin":
+                self.moneyBag += 1
         
     # update the player
 
     def update(self):
+        
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -77,7 +76,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         if self.collide_with_group(self.game.coin, True):
-            moneyBag += 1
+            self.score += 1
 
         # add colision later
 
