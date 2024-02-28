@@ -18,18 +18,19 @@ class Player(pg.sprite.Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.moneyBag = 0
+        self.speed = PLAYER_SPEED
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vx = -PLAYER_SPEED  
+            self.vx = -self.speed  
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vx = PLAYER_SPEED  
+            self.vx = self.speed  
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vy = -PLAYER_SPEED  
+            self.vy = -self.speed  
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vy = PLAYER_SPEED
+            self.vy = self.speed
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
@@ -62,6 +63,10 @@ class Player(pg.sprite.Sprite):
         if hits:
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneyBag += 1
+            if str(hits[0].__class__.__name__) == "Powerup_Speed":
+                self.speed = FAST_SPEED
+            if str(hits[0].__class__.__name__) == "Powerup_Normal":
+                self.speed = PLAYER_SPEED
         
     # update the player
 
@@ -119,6 +124,20 @@ class Powerup_Speed(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(GREEN)
+        self.game = game
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+class Powerup_Normal(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.coin
+    
+        # draw it
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(BLUE)
         self.game = game
         self.rect = self.image.get_rect()
         self.x = x
