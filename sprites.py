@@ -137,7 +137,7 @@ class Powerup_Normal(pg.sprite.Sprite):
         # draw it
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        self.image.fill(ORANGE)
         self.game = game
         self.rect = self.image.get_rect()
         self.x = x
