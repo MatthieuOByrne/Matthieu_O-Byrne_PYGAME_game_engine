@@ -53,14 +53,16 @@ class Game:
             for col, tile in enumerate(tiles):
                 print(col)
                 if tile == '1':
-                    print("a wall at", row, col)
                     Wall(self, col, row)
                 if tile == 'c':
                     Coin(self, col, row)
                 if tile == 'p':
                     Player(self, col, row)
-                if tile == 'U':
+                if tile == 'f':
                     Powerup_Speed(self, col, row)
+                if tile == 's':
+                    Powerup_Normal(self, col, row)
+                
 
 
     # make the player update every frame
