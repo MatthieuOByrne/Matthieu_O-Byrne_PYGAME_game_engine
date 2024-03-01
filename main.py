@@ -1,6 +1,16 @@
 #This game was created by: Matthieu O'Byrne
 
 
+'''
+
+
+start and restart screen
+
+moving enemies
+
+projectile
+
+'''
 # import libraries and modules
 import pygame as pg
 from setting import *
