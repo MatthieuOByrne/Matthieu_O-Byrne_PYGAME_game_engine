@@ -1,6 +1,7 @@
 # This file was created by Matthieu O'Byrne
 # The code was inspired by Zelda and informed by Chris Bradfield
 import pygame as pg
+import time
 from setting import *
 
 class Player(pg.sprite.Sprite):
@@ -19,6 +20,7 @@ class Player(pg.sprite.Sprite):
         self.y = y * TILESIZE
         self.moneyBag = 0
         self.speed = PLAYER_SPEED
+        self.cooldownForSpeed = None
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -64,14 +66,14 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneyBag += 1
             if str(hits[0].__class__.__name__) == "Powerup_Speed":
-                self.speed = FAST_SPEED
+                self.cooldownForSpeed = Cooldown(5000)
+                self.cooldownForSpeed.start()
             if str(hits[0].__class__.__name__) == "Powerup_Normal":
                 self.speed = PLAYER_SPEED
         
     # update the player
 
     def update(self):
-        
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -80,9 +82,14 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
-        if self.collide_with_group(self.game.coin, True):
-            self.score += 1
-
+        self.collide_with_group(self.game.powerup, True)
+        if self.cooldownForSpeed:
+            self.cooldownForSpeed.update()
+            print(self.cooldownForSpeed.check())
+            if self.cooldownForSpeed.check() == True:
+                self.speed = PLAYER_SPEED
+            else:
+                self.speed = FAST_SPEED
         # add colision later
 
 
@@ -104,7 +111,7 @@ class Wall(pg.sprite.Sprite):
 
 class Coin(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.coin
+        self.groups = game.all_sprites, game.powerup
     
         # draw it
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -118,8 +125,7 @@ class Coin(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 class Powerup_Speed(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.coin
-    
+        self.groups = game.all_sprites, game.powerup
         # draw it
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -132,7 +138,7 @@ class Powerup_Speed(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 class Powerup_Normal(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.coin
+        self.groups = game.all_sprites, game.powerup
     
         # draw it
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -145,3 +151,19 @@ class Powerup_Normal(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+class Cooldown:
+    def __init__(self, cooldown_time):
+        self.cooldown_time = cooldown_time
+        self.last_used_time = 0
+
+    def start(self):
+        self.last_used_time = 0
+
+    def check(self):
+        return self.last_used_time >= self.cooldown_time
+   
+    def reset(self):
+        self.last_used_time = 0
+
+    def update(self):
+        self.last_used_time += 0.1

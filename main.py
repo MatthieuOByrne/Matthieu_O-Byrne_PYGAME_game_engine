@@ -51,17 +51,14 @@ class Game:
         '''
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
-                print(line)
                 self.map_data.append(line)
     # Create run method which runs the whole GAME
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.coin = pg.sprite.Group()
+        self.powerup = pg.sprite.Group()
         for row, tiles in enumerate(self.map_data):
-            print(row)
             for col, tile in enumerate(tiles):
-                print(col)
                 if tile == '1':
                     Wall(self, col, row)
                 if tile == 'c':
