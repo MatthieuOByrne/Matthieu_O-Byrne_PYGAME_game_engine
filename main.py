@@ -65,13 +65,13 @@ class Game:
                 if tile == 'c':
                     Coin(self, col, row)
                 if tile == 'p':
-                    Player(self, col, row)
+                    self.player = Player(self, col, row)
                 if tile == 'f':
                     Powerup_Speed(self, col, row)
                 if tile == 's':
                     Powerup_Normal(self, col, row)
-                # if tile == 'm':
-                #     Mob(self,col,row, 400)
+                if tile == 'm':
+                    Mob(self,col,row)
                 
 
 
