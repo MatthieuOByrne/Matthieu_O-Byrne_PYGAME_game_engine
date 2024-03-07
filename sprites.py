@@ -21,6 +21,7 @@ class Player(pg.sprite.Sprite):
         self.moneyBag = 0
         self.speed = PLAYER_SPEED
         self.cooldownForSpeed = None
+        self.health = 100
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -66,11 +67,11 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneyBag += 1
             if str(hits[0].__class__.__name__) == "Powerup_Speed":
-                self.cooldownForSpeed = Cooldown(5000)
-                self.cooldownForSpeed.start()
-            if str(hits[0].__class__.__name__) == "Powerup_Normal":
-                self.speed = PLAYER_SPEED
-        
+                self.speed = PLAYER_SPEED                
+            if str(hits[0].__class__.__name__) == "mob":
+                print("I collided with mob")
+                self.image.fill(GREEN)
+                self.health -= 10
     # update the player
 
     def update(self):
@@ -83,13 +84,6 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         self.collide_with_group(self.game.powerup, True)
-        if self.cooldownForSpeed:
-            self.cooldownForSpeed.update()
-            print(self.cooldownForSpeed.check())
-            if self.cooldownForSpeed.check() == True:
-                self.speed = PLAYER_SPEED
-            else:
-                self.speed = FAST_SPEED
         # add colision later
 
 
@@ -151,19 +145,25 @@ class Powerup_Normal(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-class Cooldown:
-    def __init__(self, cooldown_time):
-        self.cooldown_time = cooldown_time
-        self.last_used_time = 0
-
-    def start(self):
-        self.last_used_time = 0
-
-    def check(self):
-        return self.last_used_time >= self.cooldown_time
-   
-    def reset(self):
-        self.last_used_time = 0
-
-    def update(self):
-        self.last_used_time += 0.1
+# class Mob(pg.sprite.Sprite):
+#     def __init__(self, game, x, y, speed):
+#         # add powerup groups later....
+#         self.groups = game.all_sprites, game.mobs
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE))
+#         self.image.fill(LIGHTGREY)
+#         self.rect = self.image.get_rect()
+#         self.x = x
+#         self.y = y
+#         self.rect.x = x * TILESIZE
+#         self.rect.y = y * TILESIZE
+#         self.speed=speed
+#     def update(self):
+#         self.rect.x += 1
+#         self.rect.x += TILESIZE * self.speed
+#         self.rect.y += TILESIZE * self.speed
+#         if self.rect.x > WIDTH or self.rect.x < 0:
+#             self.speed *= -1
+#         if self.rect.y > HEIGHT or self.rect.y < 0:
+#              self.speed *= -1

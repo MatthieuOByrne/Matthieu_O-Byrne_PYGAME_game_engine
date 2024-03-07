@@ -57,6 +57,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.powerup = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
@@ -69,6 +70,8 @@ class Game:
                     Powerup_Speed(self, col, row)
                 if tile == 's':
                     Powerup_Normal(self, col, row)
+                # if tile == 'm':
+                #     Mob(self,col,row, 400)
                 
 
 
@@ -100,6 +103,13 @@ class Game:
             self.all_sprites.draw(self.screen)
             pg.display.flip()
     #  move it using keycodes
+    def draw_text(self, surface, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x,y)
+        surface.blit(text_surface, text_rect)
     def events(self):
          for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -116,14 +126,31 @@ class Game:
 #             if event.type == pg.KEYDOWN:
 #                 if event.key == pg.K_DOWN or event.key == pg.K_s:
 #                     self.player1.move(dy=1)
-
+    def show_start_screen(self):
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen,"Press any key to start", 70, ORANGE, WIDTH/2-300, 100)
+        pg.display.flip()
+        self.wait_for_key_or_click()
+    
+    def wait_for_key_or_click(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYUP:
+                    waiting = False
+                if event.type == pg.MOUSEBUTTONUP:
+                    waiting = False
 # # Instantiate the game... 
 g = Game()
 # use game method run to run
 # g.show_start_screen()
+g.show_start_screen()
 while True:
     # actually run the game
     g.new()
     g.run()
     # g.show_go_screen()
-g.run()
