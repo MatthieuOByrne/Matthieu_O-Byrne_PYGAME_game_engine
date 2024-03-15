@@ -66,10 +66,8 @@ class Game:
                     Coin(self, col, row)
                 if tile == 'p':
                     self.player = Player(self, col, row)
-                if tile == 'f':
-                    Powerup_Speed(self, col, row)
                 if tile == 's':
-                    Powerup_Normal(self, col, row)
+                    Powerup_Speed(self, col, row)
                 if tile == 'm':
                     Mob(self,col,row)
                 
@@ -88,8 +86,18 @@ class Game:
          pg.quit()
          sys.exit()
     # update all positions
+    def show_death_screen(self):
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, "You died :( press any key to start", 24, ORANGE, WIDTH/2, HEIGHT/2)
+        pg.display.flip()
+        self.wait_for_key_or_click()
+        self.player.health = 3
     def update(self):
         self.all_sprites.update()
+        print(self.player.health)
+        if self.player.health <= 0:
+            self.show_death_screen()
+            self.playing = False
     # make the grid for the game
     # def draw_grid(self):
     #      for x in range(0, WIDTH, TILESIZE):
@@ -126,12 +134,13 @@ class Game:
 #             if event.type == pg.KEYDOWN:
 #                 if event.key == pg.K_DOWN or event.key == pg.K_s:
 #                     self.player1.move(dy=1)
+    
+
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
         self.draw_text(self.screen,"Press any key to start", 70, ORANGE, WIDTH/2-300, 100)
         pg.display.flip()
-        self.wait_for_key_or_click()
-    
+        self.wait_for_key_or_click()    
     def wait_for_key_or_click(self):
         waiting = True
         while waiting:
