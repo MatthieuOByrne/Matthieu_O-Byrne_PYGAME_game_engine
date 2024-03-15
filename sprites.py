@@ -3,6 +3,26 @@
 import pygame as pg
 import time
 from setting import *
+vec =pg.math.Vector2
+def collide_with_walls(sprite, group, dir):
+    if dir == 'x':
+        hits = pg.sprite.spritecollide(sprite, group, False)
+        if hits:
+            if hits[0].rect.centerx > sprite.rect.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.rect.width / 2
+            if hits[0].rect.centerx < sprite.rect.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.rect.width / 2
+            sprite.vel.x = 0
+            sprite.rect.centerx = sprite.pos.x
+    if dir == 'y':
+        hits = pg.sprite.spritecollide(sprite, group, False)
+        if hits:
+            if hits[0].rect.centery > sprite.rect.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.rect.height / 2
+            if hits[0].rect.centery < sprite.rect.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.rect.height / 2
+            sprite.vel.y = 0
+            sprite.rect.centery = sprite.pos.y
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
@@ -19,7 +39,7 @@ class Player(pg.sprite.Sprite):
         self.y = y * TILESIZE
         self.moneyBag = 0
         self.speed = PLAYER_SPEED
-        self.cooldownForSpeed = None
+        self.cooldownForSpeed = 0
         self.health = 3
         self.cooldown = 3
         self.invincibility_cooldown = None
@@ -68,8 +88,8 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneyBag += 1
             if str(hits[0].__class__.__name__) == "Powerup_Speed":
-                self.speed = FAST_SPEED                
-            if str(hits[0].__class__.__name__) == "Mob":
+                self.cooldownForSpeed = 5           
+            if str(hits[0].__class__.__name__) == "Mob2":
                 # print(hits[0].__class__.__name__)
                 # print("Collided with mob")
                 if self.cooldown <= 0:
@@ -82,6 +102,14 @@ class Player(pg.sprite.Sprite):
     def update(self):
         if self.cooldown > 0:
             self.cooldown -= self.game.dt
+        if self.cooldownForSpeed > 0:
+            self.cooldown -= self.game.dt
+            self.speed = FAST_SPEED
+        elif self.cooldownForSpeed <= 0:
+            self.speed = PLAYER_SPEED
+            self.cooldown -= self.game.dt
+
+        
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -187,3 +215,53 @@ class Mob(pg.sprite.Sprite):
         self.rect.y = self.y
 
         self.collide_with_walls('y')
+class Mob2(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        # self.image = game.mob_img
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(ORANGE)
+        # self.image = self.game.mob2_img
+        # self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        # self.hit_rect = MOB_HIT_RECT.copy()
+        # self.hit_rect.center = self.rect.center
+        self.pos = vec(x, y) * TILESIZE
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+        self.rect.center = self.pos
+        self.rot = 0
+        self.chase_distance = 500
+        # added
+        self.speed = 150
+        self.chasing = False
+        # self.health = MOB_HEALTH
+        self.hitpoints = 5
+    def sensor(self):
+        if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
+            self.chasing = True
+        else:
+            self.chasing = False
+    def update(self):
+        if self.hitpoints < 1:
+            print("mob2 should be dead")
+            self.kill()
+        self.sensor()
+        if self.chasing:
+            self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+            # self.image = pg.transform.rotate(self.image, 45)
+            # self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(self.speed, 0).rotate(-self.rot)
+            self.acc += self.vel * -1
+            self.vel += self.acc * self.game.dt
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            # self.hit_rect.centerx = self.pos.x
+            collide_with_walls(self, self.game.walls, 'x')
+            # self.hit_rect.centery = self.pos.y
+            collide_with_walls(self, self.game.walls, 'y')
+            # self.rect.center = self.hit_rect.center
+            # if self.health <= 0:
+            #     self.kill()

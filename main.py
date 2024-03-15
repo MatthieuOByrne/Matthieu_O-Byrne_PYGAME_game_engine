@@ -18,6 +18,7 @@ from sprites import *
 from random import randint
 import sys
 from os import path
+vec = pg.math.Vector2
 
 # Define game class...
 class Game:
@@ -69,7 +70,7 @@ class Game:
                 if tile == 's':
                     Powerup_Speed(self, col, row)
                 if tile == 'm':
-                    Mob(self,col,row)
+                    Mob2(self,col,row)
                 
 
 
