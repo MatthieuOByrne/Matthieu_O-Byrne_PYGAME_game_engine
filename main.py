@@ -32,6 +32,8 @@ class Game:
         # setting game clock 
         self.clock = pg.time.Clock()
         self.load_data()
+        self.heart_image_path = "./Sprites/OIP-removebg-preview.png"
+        self.image_surface = pg.image.load(self.heart_image_path).convert()
     def load_data(self):
         game_folder = path.dirname(__file__)
         self.map_data = []
@@ -99,6 +101,9 @@ class Game:
         if self.player.health <= 0:
             self.show_death_screen()
             self.playing = False
+        self.screen.blit(self.image_surface, (50, 50))
+
+            
     # make the grid for the game
     # def draw_grid(self):
     #      for x in range(0, WIDTH, TILESIZE):
