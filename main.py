@@ -102,7 +102,10 @@ class Game:
             self.show_death_screen()
             self.playing = False
         self.screen.blit(self.image_surface, (50, 50))
+        keys = pg.key.get_pressed()
 
+        if keys[pg.K_r]:
+            self.playing = False
             
     # make the grid for the game
     # def draw_grid(self):
