@@ -31,8 +31,6 @@ class Game:
         # Load game data
         self.load_data()
         # Load heart image for display
-        self.heart_image_path = "./Sprites/OIP-removebg-preview.png"
-        self.image_surface = pg.image.load(self.heart_image_path).convert()
 
     # Load game data from external files
     def load_data(self):
@@ -91,7 +89,7 @@ class Game:
         if self.player.health <= 0:
             self.show_death_screen()
             self.playing = False
-        self.screen.blit(self.image_surface, (50, 50))
+        # self.screen.blit(self.image_surface, (50, 50))
         keys = pg.key.get_pressed()
         if self.player.y > 768:
             self.show_success_screen()

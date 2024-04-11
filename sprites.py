@@ -3,8 +3,19 @@ import pygame as pg
 import time
 from setting import *  # Import settings from a file called 'setting'
 vec = pg.math.Vector2  # Alias for pygame's Vector2 class
-
+from os import path
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
 # Function to handle collision with walls
+class Spritesheet:
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
+    def get_image(self, x, y, width, height):
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0,0), (x,y, width, height))
+        # use code below if scaling is necessary
+        # image = pg.transform.scale(image, (width // 2, height // 2))
+        return image
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         # Check for collisions along the x-axis
@@ -29,6 +40,8 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.rect.centery = sprite.pos.y
 
+
+    
 # Player class definition
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -36,8 +49,9 @@ class Player(pg.sprite.Sprite):
         # (pg.sprite.Sprite)
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE, TILESIZE))  # Create player surface
-        self.image.fill(BLUE)  # Fill player surface with blue color
+        self.spritesheet = Spritesheet(path.join(img_folder, 'heart.png'))
+        self.load_images()
+        self.image = self.standing_frames[0] # Fill player surface with blue color
         self.game = game
         self.rect = self.image.get_rect()  # Get player rectangle
         self.x = x * TILESIZE  # Set player x position
@@ -96,7 +110,9 @@ class Player(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
-
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
     # Method to handle collision with a group of sprites
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
