@@ -7,6 +7,8 @@ moving enemies
 
 projectile
 
+
+Beta: Add a boss fight
 '''
 # Import necessary libraries and modules
 import pygame as pg
@@ -16,6 +18,9 @@ from random import randint
 import sys
 from os import path
 vec = pg.math.Vector2  # Vector class for 2D vectors
+
+LEVEL1 = "level1.txt"
+LEVEL2 = "level2.txt"
 
 # Define game class...
 class Game:
@@ -34,11 +39,37 @@ class Game:
 
     # Load game data from external files
     def load_data(self):
-        game_folder = path.dirname(__file__)
+        self.game_folder = path.dirname(__file__)
         self.map_data = []
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:
+        self.currLvl = LEVEL1
+        with open(path.join(self.game_folder, LEVEL1), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
+
+    def change_level(self,lvl):
+        self.currLvl = lvl
+        for s in self.all_sprites:
+            s.kill()
+        self.player.moneybag = 0
+        self.map_data = []
+        with open(path.join(self.game_folder, lvl), 'rt') as f:
+            for line in f:
+                print(line)
+                self.map_data.append(line)
+        for row, tiles in enumerate(self.map_data):
+            print(row)
+            for col, tile in enumerate(tiles):
+                print(col)
+                if tile == '1':
+                    Wall(self, col, row)
+                if tile == 'c':
+                    Coin(self, col, row)
+                if tile == 'p':
+                    self.player = Player(self, col, row)
+                if tile == 's':
+                    Powerup_Speed(self, col, row)
+                if tile == 'm':
+                    Mob2(self,col,row)
 
     # Create new game instance
     def new(self):
@@ -74,6 +105,7 @@ class Game:
         pg.quit()
         sys.exit()
 
+
     # Show death screen
     def show_death_screen(self):
         self.screen.fill(BGCOLOR)
@@ -91,11 +123,11 @@ class Game:
             self.playing = False
         # self.screen.blit(self.image_surface, (50, 50))
         keys = pg.key.get_pressed()
-        if self.player.y > 768:
-            self.show_success_screen()
-            self.playing = False
         if keys[pg.K_r]:
             self.playing = False
+        if self.currLvl == LEVEL1 and self.player.y > 768:
+            self.change_level(LEVEL2)
+            print("testic")
 
     # Draw screen
     def draw(self):
