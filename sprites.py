@@ -49,7 +49,7 @@ class Player(pg.sprite.Sprite):
         # (pg.sprite.Sprite)
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.spritesheet = Spritesheet(path.join(img_folder, 'heart.png'))
+        self.spritesheet = Spritesheet(path.join(img_folder, 'Bellarman.png'))
         self.load_images()
         self.image = self.standing_frames[0] # Fill player surface with blue color
         self.game = game
@@ -148,6 +148,23 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.powerup, True)
         self.collide_with_group(self.game.mobs, False)
 
+class HealthBar(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.spritesheet = Spritesheet(path.join(img_folder, 'heart.png'))
+        self.load_images()
+        self.image = self.standing_frames[0] # Fill player surface with blue color
+        self.game = game
+        self.rect = self.image.get_rect()  # Get player rectangle
+        self.x = x * TILESIZE  # Set player x position
+        self.y = y * TILESIZE  # Set player y position
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
+    def update(self):
+        self.rect.x = self.x
+        self.rect.y = self.y
 # Wall class definition
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):

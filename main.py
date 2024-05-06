@@ -29,7 +29,7 @@ class Game:
         # Initialize Pygame
         pg.init()
         # Set size of screen and set the screen
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT)) 
         pg.display.set_caption(TITLE)
         # Setting game clock
         self.clock = pg.time.Clock()
@@ -63,7 +63,7 @@ class Game:
                 if tile == '1':
                     Wall(self, col, row)
                 if tile == 'c':
-                    Coin(self, col, row)
+                    HealthBar(self, col, row)
                 if tile == 'p':
                     self.player = Player(self, col, row)
                 if tile == 's':
@@ -82,10 +82,10 @@ class Game:
             for col, tile in enumerate(tiles):
                 if tile == '1':
                     Wall(self, col, row)
-                if tile == 'c':
-                    Coin(self, col, row)
                 if tile == 'p':
                     self.player = Player(self, col, row)
+                if tile == 'c':
+                    HealthBar(self, col, row)
                 if tile == 's':
                     Powerup_Speed(self, col, row)
                 if tile == 'm':
@@ -127,8 +127,6 @@ class Game:
             self.playing = False
         if self.currLvl == LEVEL1 and self.player.y > 768:
             self.change_level(LEVEL2)
-            print("testic")
-
     # Draw screen
     def draw(self):
         self.screen.fill(BGCOLOR)
