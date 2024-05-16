@@ -58,12 +58,12 @@ class Game:
         self.map_data = []
         with open(path.join(self.game_folder, lvl), 'rt') as f:
             for line in f:
-                print(line)
+                
                 self.map_data.append(line)
         for row, tiles in enumerate(self.map_data):
-            print(row)
+            
             for col, tile in enumerate(tiles):
-                print(col)
+                
                 if tile == '1':
                     Wall(self, col, row)
                 if tile == 'c':
@@ -151,13 +151,22 @@ class Game:
         # self.screen.blit(self.image_surface, (50, 50))
         keys = pg.key.get_pressed()
         if keys[pg.K_r]:
-            self.playing = False
+            self.show_start_screen()
         if self.currLvl == LEVEL1 and self.player.y > 768:
             self.change_level(LEVEL2)
         if self.storm:
-            if self.storm.radius <= WIDTH/3:
-                self.show_death_screen()
-                self.playing = False
+            if self.currLvl == LEVEL1:
+                if self.storm.radius <= WIDTH/2.95:
+                    self.show_death_screen()
+                    self.playing = False
+            if self.currLvl == LEVEL2:
+                if self.storm.radius <= WIDTH/2.75:
+                    self.show_death_screen()
+                    self.playing = False
+            if self.currLvl == LEVEL3:
+                if self.storm.radius <= WIDTH/3.2:
+                    self.show_death_screen()
+                    self.playing = False
     # Draw screen
     def draw(self):
         self.screen.fill(BGCOLOR)
@@ -185,7 +194,9 @@ class Game:
     # Show start screen
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, "Press any key to start!", 60, WHITE, WIDTH/2-300, 100)
         pg.display.flip()
+        time.sleep(2.5)
         self.wait_for_key_or_click()
 
     # Show success screen

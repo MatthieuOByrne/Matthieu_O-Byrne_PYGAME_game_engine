@@ -315,9 +315,9 @@ class TransparentCircleOverSquare(pg.sprite.Sprite):
 
     def update(self):
         pass
-        self.radius -= .5  # increase the radius
+        self.radius -= 0.5  # increase the radius
         self.image = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)
-        pg.draw.rect(self.image, RED, (0, 0, WIDTH, HEIGHT))  # Draw a red square
+        pg.draw.rect(self.image, PURPLE, (0, 0, WIDTH, HEIGHT))  # Draw a red square
         pg.draw.circle(self.image, (0, 0, 0, 0), (WIDTH/2, HEIGHT/2), self.radius)
         
         self.rect = self.image.get_rect()
