@@ -47,7 +47,7 @@ class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         # Define player attributes and initialize superclass
         # (pg.sprite.Sprite)
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.players
         pg.sprite.Sprite.__init__(self, self.groups)
         self.spritesheet = Spritesheet(path.join(img_folder, 'Bellarman.png'))
         self.load_images()
@@ -300,3 +300,49 @@ class Mob2(pg.sprite.Sprite):
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
             collide_with_walls(self, self.game.walls, 'x')
             collide_with_walls(self, self.game.walls, 'y')
+class TransparentCircleOverSquare(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.x = x
+        self.y = y
+        self.radius = WIDTH/2  # start with a radius of 1
+        self.image = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)  # Create a 100x100 surface
+        pg.draw.rect(self.image, RED, (0, 0, WIDTH, HEIGHT))  # Draw a red square
+        pg.draw.circle(self.image, (0, 0, 0, 0), (WIDTH/2, HEIGHT/2), self.radius)  # Draw a transparent circle
+        self.rect = self.image.get_rect(topleft=(x*TILESIZE, y*TILESIZE))
+
+    def update(self):
+        pass
+        self.radius -= .5  # increase the radius
+        self.image = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)
+        pg.draw.rect(self.image, RED, (0, 0, WIDTH, HEIGHT))  # Draw a red square
+        pg.draw.circle(self.image, (0, 0, 0, 0), (WIDTH/2, HEIGHT/2), self.radius)
+        
+        self.rect = self.image.get_rect()
+class Portal(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        # Define player attributes and initialize superclass
+        # (pg.sprite.Sprite)
+        self.groups = game.all_sprites, game.portals
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.spritesheet = Spritesheet(path.join(img_folder, 'Portak.png'))
+        self.load_images()
+        self.image = self.standing_frames[0] # Fill player surface with blue color
+        self.game = game
+        self.rect = self.image.get_rect()  # Get player rectangle
+        self.x = x * TILESIZE  # Set player x position
+        self.y = y * TILESIZE  # Set player y position
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
+    # def collide_with_group(self, group, kill):
+    #     hits = pg.sprite.spritecollide(self, group, kill)
+    #     if hits:
+    #         # Handle different types of collisions
+    #         if str(hits[0].__class__.__name__) == "Player":
+    #             self.game.
+    def update(self):
+        self.rect.x = self.x
+        self.rect.y = self.y

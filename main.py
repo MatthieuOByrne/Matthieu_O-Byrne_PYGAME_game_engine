@@ -21,7 +21,8 @@ vec = pg.math.Vector2  # Vector class for 2D vectors
 
 LEVEL1 = "level1.txt"
 LEVEL2 = "level2.txt"
-
+LEVEL3 = "level3.txt"
+NUMLEVELS = 3
 # Define game class...
 class Game:
     # Define a special method to initialize the properties of the class...
@@ -35,6 +36,8 @@ class Game:
         self.clock = pg.time.Clock()
         # Load game data
         self.load_data()
+        self.lvlNum = 1
+        self.storm= None
         # Load heart image for display
 
     # Load game data from external files
@@ -70,6 +73,11 @@ class Game:
                     Powerup_Speed(self, col, row)
                 if tile == 'm':
                     Mob2(self,col,row)
+                if tile == 'T':
+                    self.storm = TransparentCircleOverSquare(self, col, row)
+                if tile == 'N':
+                    self.portal = Portal(self,col,row)
+
 
     # Create new game instance
     def new(self):
@@ -77,6 +85,8 @@ class Game:
         self.walls = pg.sprite.Group()
         self.powerup = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.players = pg.sprite.Group()
+        self.portals = pg.sprite.Group()
         # Iterate through map data to create game elements based on characters in the map
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
@@ -90,10 +100,15 @@ class Game:
                     Powerup_Speed(self, col, row)
                 if tile == 'm':
                     Mob2(self,col,row)
+                if tile == 'T':
+                    self.storm = TransparentCircleOverSquare(self, col, row)
+                if tile == 'N':
+                    self.portal = Portal(self,col,row)
 
     # Run the game
     def run(self):
         self.playing = True
+        self.draw_text(self.screen, str("self.cooldown.current_time"), 24, WHITE, WIDTH/2 - 32, 2)
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
@@ -127,6 +142,10 @@ class Game:
             self.playing = False
         if self.currLvl == LEVEL1 and self.player.y > 768:
             self.change_level(LEVEL2)
+        if self.storm:
+            if self.storm.radius <= WIDTH/3:
+                self.show_death_screen()
+                self.playing = False
     # Draw screen
     def draw(self):
         self.screen.fill(BGCOLOR)
@@ -154,7 +173,6 @@ class Game:
     # Show start screen
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, "Press any key to start", 70, ORANGE, WIDTH/2-300, 100)
         pg.display.flip()
         self.wait_for_key_or_click()
 
