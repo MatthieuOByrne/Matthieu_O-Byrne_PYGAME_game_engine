@@ -18,6 +18,7 @@ from random import randint
 import sys
 from os import path
 vec = pg.math.Vector2  # Vector class for 2D vectors
+import time
 
 LEVEL1 = "level1.txt"
 LEVEL2 = "level2.txt"
@@ -126,13 +127,24 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_text(self.screen, "You died :( press any key to start", 24, ORANGE, WIDTH/2, HEIGHT/2)
         pg.display.flip()
+        time.sleep(2.5)
         self.wait_for_key_or_click()
         self.player.health = 3
 
     # Update all positions
     def update(self):
         self.all_sprites.update()
-        print(self.player.health)
+        if self.portal:
+            hits = pg.sprite.spritecollide(self.portal, self.players, False)
+            if hits:
+                if self.currLvl == LEVEL1:
+                    self.change_level(LEVEL2)
+                elif self.currLvl == LEVEL2:
+                    self.change_level(LEVEL3)
+                elif self.currLvl == LEVEL3:
+                    self.show_success_screen()
+                    self.playing = False
+        # print(self.player.health)
         if self.player.health <= 0:
             self.show_death_screen()
             self.playing = False
@@ -181,6 +193,7 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_text(self.screen, "You won!!", 120, ORANGE, WIDTH/2-300, 100)
         pg.display.flip()
+        time.sleep(2.5)
         self.wait_for_key_or_click()
 
     # Wait for key press or mouse click
