@@ -300,6 +300,7 @@ class Mob2(pg.sprite.Sprite):
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
             collide_with_walls(self, self.game.walls, 'x')
             collide_with_walls(self, self.game.walls, 'y')
+# Inspired by Mr.Cozort modified a little
 class TransparentCircleOverSquare(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
